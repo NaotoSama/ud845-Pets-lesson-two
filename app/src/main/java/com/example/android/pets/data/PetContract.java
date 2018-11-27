@@ -19,6 +19,10 @@ import android.provider.BaseColumns;
 
 /**
  * API Contract for the Pets app.
+ * Make PetContract a final class that can't be extended. And that's because it's just a class for providing constants,
+ * and we won't need to extend or implement anything for this outer class.
+ *
+ * This class defines the schema of the database.
  */
 public final class PetContract {
     // To prevent someone from accidentally instantiating the contract class,

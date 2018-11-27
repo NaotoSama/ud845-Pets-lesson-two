@@ -30,6 +30,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.android.pets.data.PetContract;
 import com.example.android.pets.data.PetContract.PetEntry;
 import com.example.android.pets.data.PetDbHelper;
 
@@ -99,11 +100,11 @@ public class EditorActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(selection)) {
                     //Depending on which one they selected, we set the variable mgender to the appropriate value.
                     if (selection.equals(getString(R.string.gender_male))) {
-                        mGender = PetEntry.GENDER_MALE;
+                        mGender = PetContract.PetEntry.GENDER_MALE;
                     } else if (selection.equals(getString(R.string.gender_female))) {
-                        mGender = PetEntry.GENDER_FEMALE;
+                        mGender = PetContract.PetEntry.GENDER_FEMALE;
                     } else {
-                        mGender = PetEntry.GENDER_UNKNOWN;
+                        mGender = PetContract.PetEntry.GENDER_UNKNOWN;
                     }
                 }
             }
