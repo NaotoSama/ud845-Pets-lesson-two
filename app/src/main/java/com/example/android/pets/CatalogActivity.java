@@ -61,7 +61,7 @@ public class CatalogActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        displayDatabaseInfo();
+        displayDatabaseInfo(); //顯示資料庫數據(其輔助方法在下面)
     }
 
     /**
@@ -69,8 +69,12 @@ public class CatalogActivity extends AppCompatActivity {
      * the pets database.
      */
     private void displayDatabaseInfo() {
+        // To access our database, we instantiate our subclass of SQLiteOpenHelper and pass the content,
+        // which is the current activity.
+        PetDbHelper mDbHelper = new PetDbHelper (this); // mDbHelper像是資料庫助理，可協助生成或沿用資料庫
+
         // Create and/or open a database to read from it
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        SQLiteDatabase db = mDbHelper.getReadableDatabase(); // 叫資料庫助理去取得資料庫，並命名為db，屬性為SQLiteDatabase。
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
