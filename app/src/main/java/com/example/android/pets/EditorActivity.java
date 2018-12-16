@@ -122,13 +122,15 @@ public class EditorActivity extends AppCompatActivity {
      */
     private void insertPet() {
         // Read from input fields
-        // Use trim to eliminate leading or trailing white space
+        // Use trim to eliminate leading or trailing white space 去除字符前後的空白格
+        // Use parseInt method to convert string into an integer
         String nameString = mNameEditText.getText().toString().trim();
         String breedString = mBreedEditText.getText().toString().trim();
         String weightString = mWeightEditText.getText().toString().trim();
         int weight = Integer.parseInt(weightString);
 
         // Create database helper
+        // 這一段可直接去複製Catalog Activity下的insertPet方法，然後修改ContentValues下各欄位的數值即可
         PetDbHelper mDbHelper = new PetDbHelper(this);
 
         // Gets the database in write mode
@@ -142,7 +144,12 @@ public class EditorActivity extends AppCompatActivity {
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
         values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
 
+
+        /**
+         * 設定要顯示的快顯訊息。insert方法回傳「-1」時代表儲存出錯，就顯示錯誤的快顯訊息。
+         */
         // Insert a new row for pet in the database, returning the ID of that new row.
+        // 此insert方法預設會回傳新創的列的ID值
         long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
 
         // Show a toast message depending on whether or not the insertion was successful
@@ -177,7 +184,7 @@ public class EditorActivity extends AppCompatActivity {
             case R.id.action_save:
                 // Save pet to database
                 insertPet();
-                // Exit activity
+                // Exit activity and will automatically return to the original activity (Catalogue Activity) where we came from.
                 finish();
                 return true;
             // Respond to a click on the "Delete" menu option

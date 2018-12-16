@@ -36,7 +36,7 @@ import com.example.android.pets.data.PetDbHelper;
 public class CatalogActivity extends AppCompatActivity {
 
     /** Database helper that will provide us access to the database */
-    private PetDbHelper mDbHelper;
+    private PetDbHelper mDbHelper;  //把PetDbHelper這個subclass變成一個variable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +55,20 @@ public class CatalogActivity extends AppCompatActivity {
 
         // To access our database, we instantiate our subclass of SQLiteOpenHelper
         // and pass the context, which is the current activity.
-        mDbHelper = new PetDbHelper(this);
+        mDbHelper = new PetDbHelper(this); //把PetDbHelper實例化後才能給手機存取數據庫
     }
 
+
+    /**
+     * When the activity starts again, the list will refresh with the new pet in the database.
+     * So this will allow the row count on the screen to increase.
+     */
     @Override
     protected void onStart() {
         super.onStart();
         displayDatabaseInfo(); //顯示資料庫數據(其輔助方法在下面)
     }
+
 
     /**
      * Temporary helper method to display information in the onscreen TextView about the state of
@@ -76,8 +82,9 @@ public class CatalogActivity extends AppCompatActivity {
         // Create and/or open a database to read from it
         SQLiteDatabase db = mDbHelper.getReadableDatabase(); // 叫資料庫助理去取得資料庫，並命名為db，屬性為SQLiteDatabase。
 
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
+        // Define a projection that specifies which columns from the database will actually use after this query.
+        // "projection" is just another fancy way of "SELECT columns" in SQLite terms.
+        // Leaving the projection undefined would mean to SELECT all available columns by default.
         String[] projection = {
                 PetEntry._ID,
                 PetEntry.COLUMN_PET_NAME,
@@ -88,7 +95,7 @@ public class CatalogActivity extends AppCompatActivity {
         // Perform a query on the pets table
         Cursor cursor = db.query(
                 PetEntry.TABLE_NAME,   // The table to query
-                projection,            // The columns to return
+                projection,            // The columns to return. If we write "null" here, then all the columns will be selected by default
                 null,                  // The columns for the WHERE clause
                 null,                  // The values for the WHERE clause
                 null,                  // Don't group the rows
@@ -156,6 +163,7 @@ public class CatalogActivity extends AppCompatActivity {
         values.put(PetEntry.COLUMN_PET_BREED, "Terrier");
         values.put(PetEntry.COLUMN_PET_GENDER, PetEntry.GENDER_MALE);
         values.put(PetEntry.COLUMN_PET_WEIGHT, 7);
+        //put的意思是先配對欄位和數值
 
         // Insert a new row for Toto in the database, returning the ID of that new row.
         // The first argument for db.insert() is the pets table name.
@@ -165,6 +173,7 @@ public class CatalogActivity extends AppCompatActivity {
         // there are no values).
         // The third argument is the ContentValues object containing the info for Toto.
         long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
+        //insert的是意思是把配對的欄位和數值植入表格
     }
 
     @Override
