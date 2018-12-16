@@ -11,6 +11,29 @@ import android.net.Uri;
  */
 public class PetProvider extends ContentProvider {
 
+    /** URI matcher code for the content URI for the whole pets table */
+    private static final int PETS = 100;
+
+    /** URI matcher code for the content URI for a single pet (a single row) in the pets table */
+    private static final int PET_ID = 101;
+
+    /**
+     * Create a UriMatcher object to match a content URI to the above corresponding matcher codes.
+     * The input passed into the constructor represents the code to return for the root URI.
+     * It's common to use NO_MATCH as the input for this case.
+     * UriMatcher的存在目的是建立一套URI格式，合乎格式的URI才會被處理
+     */
+    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH); // The "s" from sUriMatcher denotes that this is a static object.
+
+    // Static initializer. This is run the first time anything is called from this class.
+    static {
+        // The calls to addURI() go here, for all of the content URI patterns that the provider.
+        // All paths added to the UriMatcher have a corresponding code to return when a match is found.
+
+        sUriMatcher.addURI(PetContract.CONTENT_AUTHORITY, PetContract.PATH_PETS, PETS); //括號中的項目分別為(content authority, 表格名稱,整個表格的matcher code)
+        sUriMatcher.addURI(PetContract.CONTENT_AUTHORITY, PetContract.PATH_PETS + "/#", PET_ID); //(content authority, 列的名稱,列的matcher code), #字號是integer wild card
+    }
+
 
     /** Tag for the log messages */
     public static final String LOG_TAG = PetProvider.class.getSimpleName();
