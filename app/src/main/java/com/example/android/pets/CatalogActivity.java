@@ -75,13 +75,6 @@ public class CatalogActivity extends AppCompatActivity {
      * the pets database.
      */
     private void displayDatabaseInfo() {
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper and pass the content,
-        // which is the current activity.
-        PetDbHelper mDbHelper = new PetDbHelper (this); // mDbHelper像是資料庫助理，可協助生成或沿用資料庫
-
-        // Create and/or open a database to read from it
-        SQLiteDatabase db = mDbHelper.getReadableDatabase(); // 叫資料庫助理去取得資料庫，並命名為db，屬性為SQLiteDatabase。
-
         // Define a projection that specifies which columns from the database will actually use after this query.
         // "projection" is just another fancy way of "SELECT columns" in SQLite terms.
         // Leaving the projection undefined would mean to SELECT all available columns by default.
@@ -92,18 +85,29 @@ public class CatalogActivity extends AppCompatActivity {
                 PetEntry.COLUMN_PET_GENDER,
                 PetEntry.COLUMN_PET_WEIGHT };
 
-        // Perform a query on the pets table
-        Cursor cursor = db.query(
-                PetEntry.TABLE_NAME,   // The table to query
-                projection,            // The columns to return. If we write "null" here, then all the columns will be selected by default
-                null,                  // The columns for the WHERE clause
-                null,                  // The values for the WHERE clause
-                null,                  // Don't group the rows
-                null,                  // Don't filter by row groups
-                null);                   // The sort order
+        //以下這個寫法不好，因為沒有經由ContentResolver和ContentProvider來query數據庫。
+        //Perform a query on the pets table。
+        //Cursor cursor = db.query(
+        //      PetEntry.TABLE_NAME,   // The table to query
+        //      projection,            // The columns to return. If we write "null" here, then all the columns will be selected by default
+        //      null,                  // The columns for the WHERE clause
+        //      null,                  // The values for the WHERE clause
+        //      null,                  // Don't group the rows
+        //      null,                  // Don't filter by row groups
+        //      null);                   // The sort order
+
+
+        //以下這個寫法才好，因為有透過ContentResolver和ContentProvider來query數據庫。
+        //Perform a query on the pets table。
+        Cursor cursor = getContentResolver().query(    //呼叫ContentResolver，然後直接對它執行query
+                PetEntry.CONTENT_URI,   //The ContentURI of the words table
+                projection,             //The columns to return for each row
+                null,          //Selection criteria
+                null,       //Selection criteria
+                null);         //The sort order for the returned row
+
 
         TextView displayView = (TextView) findViewById(R.id.text_view_pet);
-
         try {
             // Create a header in the Text View that looks like this:
             //
