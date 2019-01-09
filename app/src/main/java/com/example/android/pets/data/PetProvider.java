@@ -7,6 +7,9 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;  //If this is the first Log statement you’ve added to the provider, make sure you add this import statement to the top of your provider file, so it knows what Log class you’re referring to.
+
+import java.net.URI;
 
 /**
  * {@link ContentProvider} for Pets app.
@@ -38,7 +41,11 @@ public class PetProvider extends ContentProvider {
 
 
     /** Tag for the log messages */
+    //Since we’ll be logging multiple times throughout this file,
+    // it would be ideal to create a log tag as a global constant variable,
+    // so all log messages from the PetProvider will have the same log tag identifier when you are reading the system logs.
     public static final String LOG_TAG = PetProvider.class.getSimpleName();
+
 
     /** Database helper object */
     private PetDbHelper mDbHelper;
@@ -53,6 +60,7 @@ public class PetProvider extends ContentProvider {
         mDbHelper = new PetDbHelper(getContext());
         return true;
     }
+
 
     /**
      * Perform the query for the given URI. Use the given projection, selection, selection arguments, and sort order.
@@ -105,13 +113,47 @@ public class PetProvider extends ContentProvider {
         return cursor;
     }
 
+
     /**
      * Insert new data into the provider with the given ContentValues.
      */
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-        return null;
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case PETS:  //Only the PETS case is supported for insertion because it doesn't make sense to insert a new method into a single row where a pet already exists. So we'll only be inserting a new pet in the pets case because we're performing this operation on the whole table.
+                return insertPet(uri, contentValues); //Within the PETS case, call the insertPet helper method 
+            default:    //Any other match, or perhaps no match, will just fall into the default case, and an exception will be thrown.
+                throw new IllegalArgumentException("Insertion is not supported for " + uri);
+        }
     }
+
+    /** This is a helper method for the insert method above.
+     * Insert a pet into the database with the given content values. Return the new content URI
+     * for that specific row in the database.
+     */
+    private Uri insertPet(Uri uri, ContentValues values) {    //Insert a new pet into the pets database table with the given ContentValues
+        SQLiteDatabase database = mDbHelper.getWritableDatabase(); // Get writeable database  //Should it be a readable or writeable database? Well, we are editing the data source by adding a new pet, so we need to write changes to the database.
+
+        // Insert the new pet with the given values
+        // Once we have a writeable database object, we can call the insert() method on it, passing in the pet table name and the ContentValues object.
+        // The return value is the ID of the new row that was just created, in the form of a long data type (which can store numbers larger than the int data type).
+        long id = database.insert(PetContract.PetEntry.TABLE_NAME, null, values);
+
+        // Based on the ID, we can determine if the database operation went smoothly or not.
+        // If the ID is equal to -1, then we know the insertion failed. Otherwise, the insertion was successful.
+        // Hence, we add this check in the code. If the insertion failed, we log an error message using Log.e() and also return a null URI.
+        // That way, if a class tries to insert a pet, but receives a null URI, they’ll know that something went wrong.
+        if (id == -1) {                                               // If the ID is -1, then the insertion failed.
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);   // Log an error,
+            return null;                                              // and return null.
+
+
+        // If the insertion was successful, then we can add the row ID to the end of the pet URI
+        // (using the ContentUris.withAppendedId() method) to create a pet URI specific for the new pet, and have it returned.
+        return ContentUris.withAppendedId(uri, id);// Once we know the ID of the new row in the table, return the new URI with the ID appended to the end of it
+    }
+
 
     /**
      * Updates the data at the given selection and selection arguments, with the new ContentValues.
@@ -121,6 +163,7 @@ public class PetProvider extends ContentProvider {
         return 0;
     }
 
+
     /**
      * Delete the data at the given selection and selection arguments.
      */
@@ -128,6 +171,7 @@ public class PetProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         return 0;
     }
+
 
     /**
      * Returns the MIME type of data for the content URI.
