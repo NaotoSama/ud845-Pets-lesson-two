@@ -148,10 +148,9 @@ public class PetProvider extends ContentProvider {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);   // Log an error,
             return null;                                              // and return null.
 
-
         // If the insertion was successful, then we can add the row ID to the end of the pet URI
         // (using the ContentUris.withAppendedId() method) to create a pet URI specific for the new pet, and have it returned.
-        return ContentUris.withAppendedId(uri, id);// Once we know the ID of the new row in the table, return the new URI with the ID appended to the end of it
+        return ContentUris.withAppendedId(uri, id); // Once we know the ID of the new row in the table, return the new URI with the ID appended to the end of it
     }
 
 

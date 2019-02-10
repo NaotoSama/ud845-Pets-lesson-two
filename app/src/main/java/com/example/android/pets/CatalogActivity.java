@@ -147,13 +147,13 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     /**
-     * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
+     * Helper method to insert "hardcoded pet data" into the database. For debugging purposes only.
      *
      * In the CatalogActivity, when a user clicks on the “Insert Dummy Pet” menu item,
      * we will call the ContentResolver insert() method with the pet content URI and a ContentValues object (containing info about Toto).
      * This insertPet() method is called from the onOptionsItemSelected() method when the menu item is clicked on.
      */
-    private void insertPet() {
+    private void insertPet() { //此method純粹是測試用，看看用戶按“Insert Dummy Pet”時會不會正常輸入ToTo狗的hardcoded資訊。
         // Create a ContentValues object where column names are the keys,
         // and Toto's pet attributes are the values.
         ContentValues values = new ContentValues();
