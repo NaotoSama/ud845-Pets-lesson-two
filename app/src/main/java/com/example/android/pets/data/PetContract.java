@@ -114,6 +114,23 @@ public final class PetContract {
         public static final int GENDER_UNKNOWN = 0;
         public static final int GENDER_MALE = 1;
         public static final int GENDER_FEMALE = 2;
+
+
+        /** This is a helper method for the insertPet method in PetProvider.java, an is used for sanity check of GENDER.
+         *
+         * Returns whether or not the given gender is {@link #GENDER_UNKNOWN}, {@link #GENDER_MALE},
+         * or {@link #GENDER_FEMALE}.
+         *
+         * I defined the isValidGender() method in the PetContract’s PetEntry class where the gender constants are defined.
+         * The method takes an integer as input, and returns true or false if the integer is a valid gender (equals GENDER_MALE, GENDER_FEMALE, or GENDER_UNKNOWN).
+         * I decided to put this helper method in the PetContract because I could imagine it being used in multiple places throughout the app.
+         */
+        public static boolean isValidGender(int gender) {
+            if (gender == GENDER_UNKNOWN || gender == GENDER_MALE || gender == GENDER_FEMALE) {
+                return true;
+            }
+            return false;
+        }
     }
 
 }
