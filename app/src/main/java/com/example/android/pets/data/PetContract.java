@@ -15,6 +15,7 @@
  */
 package com.example.android.pets.data;
 
+import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -66,6 +67,28 @@ public final class PetContract {
          * Inside each of the Entry classes in the contract, we create a full URI for the class as a constant called CONTENT_URI.
          * The Uri.withAppendedPath() method appends the BASE_CONTENT_URI (which contains the scheme and the content authority) to the path segment.*/
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_PETS);
+
+
+        /**
+         * The MIME type of the {@link #CONTENT_URI} for a list of pets.
+         */
+        public static final String CONTENT_MIME_DIRECTORY_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PETS;
+                //CURSOR_DIR_BASE_TYPE" is "vnd.android.cursor.dir" in MIME terms.
+                //The returned string will be "vnd.android.cursor.dir/com.example.android.pet/pets"
+                //Where “dir” is short for “directory” because the URI can point to multiple records.
+                //In this case, multiple records means multiple rows, or multiple contacts in the database.
+
+        /**
+         * The MIME type of the {@link #CONTENT_URI} for a single pet.
+         */
+        public static final String CONTENT_MIME_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PETS;
+                //CURSOR_ITEM_BASE_TYPE is "vnd.android.cursor.item" in MIME terms.
+                //The returned string will be "vnd.android.cursor.item/com.example.android.pet/pets"
+                //Where “item” means the URI can point to a single record.
+                //In this case, a single record means a single row, or a single contact in the database.
+
 
         /** Name of database table for pets */
         public final static String TABLE_NAME = "pets";

@@ -179,4 +179,29 @@ public class PetProvider extends ContentProvider {
     public String getType(Uri uri) {
         return null;
     }
+
+
+    /**
+     * The purpose of this method is to return a String that describes the type of the data stored at the input Uri.
+     * This String is known as the MIME type, which can also be referred to as content type.
+     * One use case where this functionality is important is if you’re sending an intent with a URI set on the data field.
+     * The Android system will check the MIME type of that URI to determine which app component on the device can best handle your request.
+     * (If the URI happens to be a content URI, then the system will check with the corresponding ContentProvider to ask for the MIME type using the getType() method.)
+     */
+    @Override
+    public String getType(Uri uri) {
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case PETS:
+                return PetContract.PetEntry.CONTENT_MIME_DIRECTORY_TYPE;
+                //“content://com.example.android.pets/pets/”, which is the PETS case, which references the entire pets table.
+                // Basically it represents a list of pets. In MIME type terms, this is known as a directory of data.
+            case PET_ID:
+                return PetContract.PetEntry.CONTENT_MIME_ITEM_TYPE;
+                //“content://com.example.android.pets/pets/#”, which is the PETS_ID case,  which represents a single pet.
+                // In MIME type terms, a single row of data is an item of data.
+            default:
+                throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
+        }
+    }
 }
