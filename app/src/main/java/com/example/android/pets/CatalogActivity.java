@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package com.example.android.pets;
-
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -26,10 +25,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.android.pets.data.PetContract.PetEntry;
-import com.example.android.pets.data.PetDbHelper;
 
 /**
  * Displays list of pets that were entered and stored in the app.
@@ -50,6 +47,14 @@ public class CatalogActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+        // Find the ListView which will be populated with the pet data
+        ListView petListView = (ListView) findViewById(R.id.list);
+
+        // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
+        View emptyView = findViewById(R.id.empty_view);
+        petListView.setEmptyView(emptyView);
     }
 
 
@@ -135,6 +140,7 @@ public class CatalogActivity extends AppCompatActivity {
         Uri newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
         //insert的是意思是把配對的欄位和數值植入表格
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

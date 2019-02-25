@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Empty view for the list
+An empty view is a view which is shown when there are no items in the ListView.
+Instead of showing a blank screen in the app when there is no data,
+having an attractive image or descriptive text can improve the user experience.
+The text can even prompt the user to add some data.
+In our Pets app, we’d like to setup the below empty view when there are no pets to display in the ListView.-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/empty_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true">
+
+    <ImageView
+        android:id="@+id/empty_shelter_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_empty_shelter"/>
+
+    <TextView
+        android:id="@+id/empty_title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/empty_shelter_image"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="sans-serif-medium"
+        android:paddingTop="16dp"
+        android:text="@string/empty_view_title_text"
+        android:textAppearance="?android:textAppearanceMedium"/>
+
+    <TextView
+        android:id="@+id/empty_subtitle_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/empty_title_text"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="sans-serif"
+        android:paddingTop="8dp"
+        android:text="@string/empty_view_subtitle_text"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textColor="#A2AAB0"/>
+</RelativeLayout>
