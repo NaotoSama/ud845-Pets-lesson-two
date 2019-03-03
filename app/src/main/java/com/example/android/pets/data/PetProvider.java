@@ -1,5 +1,4 @@
 package com.example.android.pets.data;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -110,6 +109,11 @@ public class PetProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
+
+        // Set Notification URL on the cursor so we know what content URI the cursor was created for.
+        // If the data at this URL changes, then we need to update the cursor.
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
         return cursor;
     }
 
