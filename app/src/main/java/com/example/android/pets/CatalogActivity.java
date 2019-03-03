@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 package com.example.android.pets;
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,8 +33,18 @@ import com.example.android.pets.data.PetContract.PetEntry;
 
 /**
  * Displays list of pets that were entered and stored in the app.
+ * Set the CatalogActivity to implement the LoaderManager interface to use loaders to automatically
+ * store and update cursor data in the background instead of the main thread to prevent app hangs.
  */
-public class CatalogActivity extends AppCompatActivity {
+public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> { // <Cursor> means telling to the loader to return a cursor
+
+    // To initialize a loader, first make an integer constant loader called "PET_LOADER"
+    private static final int PET_LOADER = 0;  // "0" is just an arbitrary choice. It's ok to set it up as any other integer.
+
+    // Since further down we'll be using an adapter for all callback methods, create an instance of that class.
+    PetCursorAdapter mCursorAdapter;  // This will be the adapter for the list view.
+
+    private Cursor data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,66 +68,17 @@ public class CatalogActivity extends AppCompatActivity {
         // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
         View emptyView = findViewById(R.id.empty_view);
         petListView.setEmptyView(emptyView);
+
+
+        // Set up an adapter to create a list item for each row of pet data in the cursor.
+        // There is no pet data yet until the loader finishes, so pass in null for the cursor.
+        mCursorAdapter = new PetCursorAdapter(this, null);
+        petListView.setAdapter(mCursorAdapter);
+
+        // Start the loader.
+        getLoaderManager().initLoader(PET_LOADER, null, this);
     }
 
-
-    /**
-     * When the activity starts again, the list will refresh with the new pet in the database.
-     * So this will allow the row count on the screen to increase.
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-        displayDatabaseInfo(); //顯示資料庫數據(其輔助方法在下面)
-    }
-
-
-    /**
-     * Temporary helper method to display information in the onscreen TextView about the state of
-     * the pets database.
-     */
-    private void displayDatabaseInfo() {
-        // Define a projection that specifies which columns from the database will actually use after this query.
-        // "projection" is just another fancy way of "SELECT columns" in SQLite terms.
-        // Leaving the projection undefined would mean to SELECT all available columns by default.
-        String[] projection = {
-                PetEntry._ID,
-                PetEntry.COLUMN_PET_NAME,
-                PetEntry.COLUMN_PET_BREED,
-                PetEntry.COLUMN_PET_GENDER,
-                PetEntry.COLUMN_PET_WEIGHT };
-
-        //以下這個寫法不好，因為沒有經由ContentResolver和ContentProvider來query數據庫。
-        //Perform a query on the pets table。
-        //Cursor cursor = db.query(
-        //      PetEntry.TABLE_NAME,   // The table to query
-        //      projection,            // The columns to return. If we write "null" here, then all the columns will be selected by default
-        //      null,                  // The columns for the WHERE clause
-        //      null,                  // The values for the WHERE clause
-        //      null,                  // Don't group the rows
-        //      null,                  // Don't filter by row groups
-        //      null);                   // The sort order
-
-
-        //以下這個寫法才好，因為有透過ContentResolver和ContentProvider來query數據庫。
-        //Perform a query on the pets table。
-        Cursor cursor = getContentResolver().query(    //呼叫ContentResolver，然後直接對它執行query
-                PetEntry.CONTENT_URI,   //The ContentURI of the words table
-                projection,             //The columns to return for each row
-                null,          //Selection criteria
-                null,       //Selection criteria
-                null);         //The sort order for the returned row
-
-
-        // Find the ListView which will be populated with the pet data
-        ListView petListView = (ListView) findViewById(R.id.list_item);
-
-        // Setup an Adapter to create a list item for each row of pet data in the Cursor.
-        PetCursorAdapter adapter = new PetCursorAdapter(this, cursor);
-
-        // Attach the adapter to the ListView.
-        petListView.setAdapter(adapter);
-    }
 
     /**
      * Helper method to insert "hardcoded pet data" into the database. For debugging purposes only.
@@ -157,7 +121,6 @@ public class CatalogActivity extends AppCompatActivity {
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
                 insertPet();
-                displayDatabaseInfo();
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
@@ -166,4 +129,34 @@ public class CatalogActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Define a projection that specifies the columns from the table we care about.
+        String[] projection = {
+                PetEntry._ID,
+                PetEntry.COLUMN_PET_NAME,
+                PetEntry.COLUMN_PET_BREED };
+
+        // This loader will execute the ContentProvider's query method on a background thread.
+        return new CursorLoader(this,    // Return a new CursorLoader
+                PetEntry.CONTENT_URI,   //The ContentURI of the words table
+                projection,             //The columns to return for each row
+                null,          //Selection criteria
+                null,       //Selection criteria
+                null);         //The sort order for the returned row
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        // Update PetCursorAdapter with the new cursor containing updated pet data.
+        mCursorAdapter.swapCursor(data); //Swap for new cursor
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // The callback called when the data needs to be deleted.
+        mCursorAdapter.swapCursor(null);
+    }
+
 }
