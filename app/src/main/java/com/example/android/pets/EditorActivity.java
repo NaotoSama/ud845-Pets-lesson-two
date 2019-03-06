@@ -64,6 +64,19 @@ public class EditorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
+        // Get the Uri intent from CatalogActivity to figure out if we are creating a new pet or editing an existing one.
+        Intent intent = getIntent();
+        Uri currentPetUri = intent.getData();
+
+        // If the user taps the FAB button, that means the user is creating a new pet, and the intent will not contain a uri.
+        // If the intent does not contain a uri, then set the title to "Add a pet".
+        // If otherwise, then set the title to "Edit pet".
+        if (currentPetUri ==null) {
+            setTitle("Add a Pet"); // This is a new pet, so change the app bar to say "Add a Pet".
+        } else {
+            setTitle(getString (R.string.editor_activity_title_edit_pet)); // Otherwise this is an existing pet, so change the app bar to say "Edit Pet".
+        }
+
         // Find all relevant views that we will need to read user input from
         // Connect all the EditText variables to the edit views
         mNameEditText = (EditText) findViewById(R.id.edit_pet_name);
