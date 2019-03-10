@@ -161,6 +161,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 PetEntry.COLUMN_PET_NAME,
                 PetEntry.COLUMN_PET_BREED };
 
+        // Make a CursorLoader, passing in the uri and the projection.
         // This loader will execute the ContentProvider's query method on a background thread.
         return new CursorLoader(this,    // Return a new CursorLoader
                 PetEntry.CONTENT_URI,   //The ContentURI of the words table
