@@ -103,21 +103,25 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         // Get the Uri intent from CatalogActivity to figure out if we are creating a new pet or editing an existing one.
         Intent intent = getIntent();
-        Uri currentPetUri = intent.getData();
+        mCurrentPetUri = intent.getData();
 
-        // If the user taps the FAB button, that means the user is creating a new pet, and the intent will not contain a uri.
-        // If the intent does not contain a uri, then set the title to "Add a pet".
-        // If otherwise, then set the title to "Edit pet".
-        if (currentPetUri ==null) {
-            setTitle("Add a Pet"); // This is a new pet, so change the app bar to say "Add a Pet".
+        // If the intent DOES NOT contain a pet content URI, then we know that we are
+        // creating a new pet.
+        if (mCurrentPetUri == null) {
+            // This is a new pet, so change the app bar to say "Add a Pet"
+            setTitle(getString(R.string.editor_activity_title_new_pet));
+
+            // Invalidate the options menu, so the "Delete" menu option can be hidden.
+            // (It doesn't make sense to delete a pet that hasn't been created yet.)
+            invalidateOptionsMenu();
         } else {
-            setTitle(getString (R.string.editor_activity_title_edit_pet)); // Otherwise this is an existing pet, so change the app bar to say "Edit Pet".
+            // Otherwise this is an existing pet, so change app bar to say "Edit Pet"
+            setTitle(getString(R.string.editor_activity_title_edit_pet));
+
+            // Initialize a loader to read the pet data from the database
+            // and display the current values in the editor
+            getLoaderManager().initLoader(EXISTING_PET_LOADER, null, (android.app.LoaderManager.LoaderCallbacks<Object>) this);
         }
-
-
-        // Initialize a loader to read the pet data from the database
-        // and display the current values in the editor
-        getSupportLoaderManager().initLoader(EXISTING_PET_LOADER, null, this);
 
 
         // Find all relevant views that we will need to read user input from
@@ -233,6 +237,22 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_editor, menu);
+        return true;
+    }
+
+
+    /**
+     * This method is called after invalidateOptionsMenu(), so that the
+     * menu can be updated (some menu items can be hidden or made visible).
+     */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        // If this is a new pet, hide the "Delete" menu item.
+        if (mCurrentPetUri == null) {
+            MenuItem menuItem = menu.findItem(R.id.action_delete);
+            menuItem.setVisible(false);
+        }
         return true;
     }
 
