@@ -271,6 +271,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 // Exit activity and will automatically return to the original activity (Catalogue Activity) where we came from.
                 finish();
                 return true;
+            // Make sure the showDeleteConfirmationDialog actually is triggered by calling it when the delete menu button is pressed.
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
                 // Pop up confirmation dialog for deletion
@@ -440,7 +441,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the postivie and negative buttons on the dialog.
+        // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
@@ -485,6 +486,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             int rowsDeleted = getContentResolver().delete(mCurrentPetUri, null, null);
 
             // Show a toast message depending on whether or not the delete was successful.
+            // The delete method, like update, returns the number of rows deleted. See if the delete was successful by checking whether 0 rows were deleted.
+            // If zero rows were deleted, then the delete was not successful and we’ll show a toast that says “ Error with deleting pet”.
+            // Otherwise the operation was successful, and we pop up a toast that says “Pet deleted”.
             if (rowsDeleted == 0) {
                 // If no rows were deleted, then there was an error with the delete.
                 Toast.makeText(this, getString(R.string.editor_delete_pet_failed),

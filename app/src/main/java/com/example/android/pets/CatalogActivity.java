@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package com.example.android.pets;
+
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -25,6 +26,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -129,6 +131,18 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     }
 
 
+    /**
+     * Helper method to delete all pets in the database.
+     *
+     * Use the ContentResolver’s delete method and pass the PetEntry.CONTENT_URI. Why the content URI?
+     * Because that’s the generic __/pets uri which in our content provider will delete all pets.
+     */
+    private void deleteAllPets() {
+        int rowsDeleted = getContentResolver().delete(PetEntry.CONTENT_URI, null, null);
+        Log.v("CatalogActivity", rowsDeleted + " rows deleted from pet database");
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_catalog.xml file.
@@ -147,7 +161,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
-                // Do nothing for now
+                deleteAllPets();
                 return true;
         }
         return super.onOptionsItemSelected(item);
